@@ -64,7 +64,7 @@ Status_t Si7006_readElectronicId(Failure_t* failure, uint32_t* serial_nr_a, uint
  *  @retval LIB_ERROR       - an error occur during using a library function
  *  @retval INTERNAL_ERROR  - an error occur during using an internal function
  *****************************************************************************/
-Status_t Si7006_readHumidity(Failure_t* failure, uint8_t* humidity, SI7006_READ_MODES_t mode);
+Status_t Si7006_readHumidity(Failure_t* failure, float* humidity, SI7006_READ_MODES_t mode);
 
 /** ***************************************************************************
  *  @brief  Measure the temperature and read the value out of the sensor
@@ -76,7 +76,7 @@ Status_t Si7006_readHumidity(Failure_t* failure, uint8_t* humidity, SI7006_READ_
  *  @retval LIB_ERROR       - an error occur during using a library function
  *  @retval INTERNAL_ERROR  - an error occur during using an internal function
  *****************************************************************************/
-Status_t Si7006_readTemperature(Failure_t* failure, uint8_t* temperature, SI7006_READ_MODES_t mode);
+Status_t Si7006_readTemperature(Failure_t* failure, float* temperature, SI7006_READ_MODES_t mode);
 
 /** ***************************************************************************
  *  @brief  Read the heater configuration of the SI 7006

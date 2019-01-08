@@ -162,7 +162,7 @@ Status_t Si7006_readElectronicId(Failure_t* failure, uint32_t* serial_nr_a, uint
     if (ret != ESP_OK) {
         failure->status = LIB_ERROR;
         failure->failure_code = ret;
-        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        failure->fn_pointer = (uint32_t*) Si7006_readElectronicId;
         return LIB_ERROR;
     }
     vTaskDelay(1 / portTICK_RATE_MS);
@@ -180,7 +180,7 @@ Status_t Si7006_readElectronicId(Failure_t* failure, uint32_t* serial_nr_a, uint
     if (ret != ESP_OK) {
         failure->status = LIB_ERROR;
         failure->failure_code = ret;
-        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        failure->fn_pointer = (uint32_t*) Si7006_readElectronicId;
         return LIB_ERROR;
     }
 
@@ -198,7 +198,7 @@ Status_t Si7006_readElectronicId(Failure_t* failure, uint32_t* serial_nr_a, uint
     if (ret != ESP_OK) {
         failure->status = LIB_ERROR;
         failure->failure_code = ret;
-        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        failure->fn_pointer = (uint32_t*) Si7006_readElectronicId;
         return LIB_ERROR;
     }
     vTaskDelay(1 / portTICK_RATE_MS);
@@ -216,7 +216,7 @@ Status_t Si7006_readElectronicId(Failure_t* failure, uint32_t* serial_nr_a, uint
     if (ret != ESP_OK) {
         failure->status = LIB_ERROR;
         failure->failure_code = ret;
-        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        failure->fn_pointer = (uint32_t*) Si7006_readElectronicId;
         return LIB_ERROR;
     }
 
@@ -236,7 +236,47 @@ Status_t Si7006_readElectronicId(Failure_t* failure, uint32_t* serial_nr_a, uint
  *  @retval LIB_ERROR       - an error occur during using a library function
  *  @retval INTERNAL_ERROR  - an error occur during using an internal function
  *****************************************************************************/
-Status_t Si7006_readHumidity(Failure_t* failure, uint8_t* humidity, SI7006_READ_MODES_t mode) {
+Status_t Si7006_readHumidity(Failure_t* failure, float* humidity, SI7006_READ_MODES_t mode) {
+    i2c_cmd_handle_t i2c_handle;
+    esp_err_t ret;
+    uint8_t low_byte;
+    uint8_t high_byte;
+    uint16_t measured;
+
+    // write the command to read the firware version
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, READ_HUMIDITY_NO_HOLD_MASTER, ACK_CHECK_EN);
+    i2c_master_stop(i2c_handle);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readHumidity;
+        return LIB_ERROR;
+    }
+    vTaskDelay(50 / portTICK_RATE_MS);
+
+    // read the firmware version
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
+    i2c_master_read_byte(i2c_handle, &high_byte, ACK_CHECK_EN);
+    i2c_master_read_byte(i2c_handle, &low_byte, ACK_CHECK_DIS);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readHumidity;
+        return LIB_ERROR;
+    }
+
+    measured = (high_byte << 8) + low_byte;
+    *humidity = ((125 * measured) / 65536) - 6;
+
     return SUCCESS;
 }
 
@@ -251,9 +291,48 @@ Status_t Si7006_readHumidity(Failure_t* failure, uint8_t* humidity, SI7006_READ_
  *  @retval LIB_ERROR       - an error occur during using a library function
  *  @retval INTERNAL_ERROR  - an error occur during using an internal function
  *****************************************************************************/
-Status_t Si7006_readTemperature(Failure_t* failure, uint8_t* temperature, SI7006_READ_MODES_t mode) {
-    return SUCCESS;
-}
+Status_t Si7006_readTemperature(Failure_t* failure, float* temperature, SI7006_READ_MODES_t mode) {
+    i2c_cmd_handle_t i2c_handle;
+    esp_err_t ret;
+    uint8_t low_byte;
+    uint8_t high_byte;
+    uint16_t measured;
+
+    // write the command to read the firware version
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, READ_TEMPERATURE_NO_HOLD_MASTER, ACK_CHECK_EN);
+    i2c_master_stop(i2c_handle);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readHumidity;
+        return LIB_ERROR;
+    }
+    vTaskDelay(50 / portTICK_RATE_MS);
+
+    // read the firmware version
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
+    i2c_master_read_byte(i2c_handle, &high_byte, ACK_CHECK_EN);
+    i2c_master_read_byte(i2c_handle, &low_byte, ACK_CHECK_DIS);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readHumidity;
+        return LIB_ERROR;
+    }
+
+    measured = (high_byte << 8) + low_byte;
+    *temperature = ((175.72 * measured) / 65536) - 46.85;
+
+    return SUCCESS;}
 
 /** ***************************************************************************
  *  @fn     Si7006_readHeaterConfig(Failure_t* failure, uint8_t* heater_config)

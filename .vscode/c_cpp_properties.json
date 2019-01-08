@@ -3,6 +3,8 @@
         {
             "name": "Win32",
             "includePath": [
+                "${workspaceFolder}/main/include",
+                "${workspaceFolder}/components/si_7006/include",
                 "C:/msys32/esp/esp-idf/components/app_trace/include",
                 "C:/msys32/esp/esp-idf/components/app_update/include",
                 "C:/msys32/esp/esp-idf/components/aws_iot",
@@ -12,7 +14,6 @@
                 "C:/msys32/esp/esp-idf/components/coap",
                 "C:/msys32/esp/esp-idf/components/console",
                 "C:/msys32/esp/esp-idf/components/cxx",
-                "C:/msys32/esp/esp-idf/components/driver/include",
                 "C:/msys32/esp/esp-idf/components/esp_adc_cal",
                 "C:/msys32/esp/esp-idf/components/esp_event",
                 "C:/msys32/esp/esp-idf/components/esp_http_client",
@@ -27,7 +28,6 @@
                 "C:/msys32/esp/esp-idf/components/expat",
                 "C:/msys32/esp/esp-idf/components/fatfs",
                 "C:/msys32/esp/esp-idf/components/freemodbus",
-                "C:/msys32/esp/esp-idf/components/freertos",
                 "C:/msys32/esp/esp-idf/components/heap",
                 "C:/msys32/esp/esp-idf/components/idf_test",
                 "C:/msys32/esp/esp-idf/components/jsmn",
@@ -38,12 +38,9 @@
                 "C:/msys32/esp/esp-idf/components/mbedtls",
                 "C:/msys32/esp/esp-idf/components/mdns",
                 "C:/msys32/esp/esp-idf/components/micro-ecc",
-                "${workspaceFolder}/main/include",
-                "${workspaceFolder}/components/**",
-                "${workspaceFolder}/components/i2c_master/include",
-                "${workspaceFolder}/components/si_7006/include",
                 "C:/msys32/esp/esp-idf/components/esp32/include",
-                "C:/msys32/esp/esp-idf/components/freertos/include"
+                "C:/msys32/esp/esp-idf/components/freertos/include",
+                "C:/msys32/esp/esp-idf/components/driver/include/driver"
             ],
             "defines": [
                 "_DEBUG",
