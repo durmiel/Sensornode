@@ -3,7 +3,9 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := app-template
+PROJECT_NAME := Sensornode
+
+EXCLUDE_COMPONENTS :=
 
 include $(IDF_PATH)/make/project.mk
 

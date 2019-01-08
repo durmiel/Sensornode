@@ -1,42 +1,50 @@
+/* Hello World Example
+
+   This example code is in the Public Domain (or CC0 licensed, at your option.)
+
+   Unless required by applicable law or agreed to in writing, this
+   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+   CONDITIONS OF ANY KIND, either express or implied.
+*/
+#include <stdio.h>
 #include "freertos/FreeRTOS.h"
-#include "esp_wifi.h"
+#include "freertos/task.h"
 #include "esp_system.h"
-#include "esp_event.h"
-#include "esp_event_loop.h"
-#include "nvs_flash.h"
-#include "driver/gpio.h"
 
-esp_err_t event_handler(void *ctx, system_event_t *event)
-{
-    return ESP_OK;
-}
+#include <si_7006.h>
 
-void app_main(void)
-{
-    nvs_flash_init();
-    tcpip_adapter_init();
-    ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
-    ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
-    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
-    wifi_config_t sta_config = {
-        .sta = {
-            .ssid = CONFIG_ESP_WIFI_SSID,
-            .password = CONFIG_ESP_WIFI_PASSWORD,
-            .bssid_set = false
+void app_main() { 
+    Status_t ret;
+    Failure_t failure;
+    float humidity;
+    float temperature;
+    uint8_t user_config;
+
+    //uint8_t firmware_version;
+    //uint32_t electronic_id_a;
+    //uint32_t electronic_id_b;
+
+    ret = Si7006_init(&failure);
+    while (1) {
+        if (ret != SUCCESS) {
+            printf("Error during initialization!\n\r");
         }
-    };
-    ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &sta_config) );
-    ESP_ERROR_CHECK( esp_wifi_start() );
-    ESP_ERROR_CHECK( esp_wifi_connect() );
+        else {
+/*
+            Si7006_readFirmwareVersion(&failure, &firmware_version);
+            printf("Firmware Version: %d\n\r", firmware_version);
+            Si7006_readElectronicId(&failure, &electronic_id_a, &electronic_id_b);
+            printf("Electronic ID A - %x\n\r", electronic_id_a);
+            printf("Electronic ID B - %x\n\r", electronic_id_b);
+*/
+            Si7006_readUserRegister(&failure, &user_config);
+            printf("User Config Reg: %x\n\r", user_config);
 
-    gpio_set_direction(GPIO_NUM_4, GPIO_MODE_OUTPUT);
-    int level = 0;
-    while (true) {
-        gpio_set_level(GPIO_NUM_4, level);
-        level = !level;
-        vTaskDelay(300 / portTICK_PERIOD_MS);
+            Si7006_readHumidity(&failure, &humidity, NO_HOLD);
+            printf("Humidity: %f\n\r", humidity);
+            Si7006_readTemperature(&failure, &temperature, NO_HOLD);
+            printf("Temperature: %f°C\n\r", temperature);
+        }
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
-

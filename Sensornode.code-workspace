@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"si_7006.h": "c",
+			"global.h": "c"
+		}
+	}
+}
