@@ -17,6 +17,8 @@ void app_main() {
     Status_t ret;
     Failure_t failure;
     uint8_t firmware_version;
+    uint32_t electronic_id_a;
+    uint32_t electronic_id_b;
 
     ret = Si7006_init(&failure);
     while (1) {
@@ -26,6 +28,10 @@ void app_main() {
         else {
             Si7006_readFirmwareVersion(&failure, &firmware_version);
             printf("Firmware Version: %d\n\r", firmware_version);
+
+            Si7006_readElectronicId(&failure, &electronic_id_a, &electronic_id_b);
+            printf("Electronic ID A - %x\n\r", electronic_id_a);
+            printf("Electronic ID B - %x\n\r", electronic_id_b);
         }
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

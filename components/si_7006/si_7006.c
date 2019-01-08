@@ -184,7 +184,7 @@ Status_t Si7006_readElectronicId(Failure_t* failure, uint32_t* serial_nr_a, uint
         return LIB_ERROR;
     }
 
-    *serial_nr_a = (buf[0] << 24) + (buf[2] << 16) + (buf[4] << 8) + (buf[6] << 0)
+    *serial_nr_a = (buf[0] << 24) + (buf[2] << 16) + (buf[4] << 8) + (buf[6] << 0);
 
     // write the command to read electronic id second part
     i2c_handle = i2c_cmd_link_create();
@@ -220,7 +220,7 @@ Status_t Si7006_readElectronicId(Failure_t* failure, uint32_t* serial_nr_a, uint
         return LIB_ERROR;
     }
 
-    *serial_nr_b = (buf[0] << 24) + (buf[2] << 16) + (buf[4] << 8) + (buf[6] << 0)
+    *serial_nr_b = (buf[0] << 24) + (buf[2] << 16) + (buf[4] << 8) + (buf[6] << 0);
 
     return SUCCESS;
 }
