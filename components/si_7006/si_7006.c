@@ -108,20 +108,26 @@ Status_t Si7006_readFirmwareVersion(Failure_t* failure, uint8_t* firmware_versio
     ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(i2c_handle);
     if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
         return LIB_ERROR;
     }
-    vTaskDelay(30 / portTICK_RATE_MS);
+    vTaskDelay(1 / portTICK_RATE_MS);
+
     // read the firmware version
     i2c_handle = i2c_cmd_link_create();
     i2c_master_start(i2c_handle);
     i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
-    i2c_master_read_byte(i2c_handle, firmware_version, NACK_VAL);
+    i2c_master_read_byte(i2c_handle, firmware_version, ACK_CHECK_DIS);
     ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(i2c_handle);
     if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
         return LIB_ERROR;
     }
-   
     return SUCCESS;
 }
 
@@ -139,6 +145,83 @@ Status_t Si7006_readFirmwareVersion(Failure_t* failure, uint8_t* firmware_versio
  *  @retval INTERNAL_ERROR  - an error occur during using an internal function
  *****************************************************************************/
 Status_t Si7006_readElectronicId(Failure_t* failure, uint32_t* serial_nr_a, uint32_t* serial_nr_b) {
+    i2c_cmd_handle_t i2c_handle;
+    esp_err_t ret;
+    uint8_t buf[8];
+    uint8_t i;
+
+    // write the command to read electronic id first part
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, READ_ELECTRONIC_ID_1ST_0, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, READ_ELECTRONIC_ID_1ST_1, ACK_CHECK_EN);
+    i2c_master_stop(i2c_handle);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
+    vTaskDelay(1 / portTICK_RATE_MS);
+
+    // read the electronic id first part
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
+    for (i = 0; i < 7; ++i) {
+        i2c_master_read_byte(i2c_handle, &buf[i], ACK_CHECK_EN);
+    }
+    i2c_master_read_byte(i2c_handle, &buf[7], ACK_CHECK_DIS);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
+
+    *serial_nr_a = (buf[0] << 24) + (buf[2] << 16) + (buf[4] << 8) + (buf[6] << 0)
+
+    // write the command to read electronic id second part
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, READ_ELECTRONIC_ID_2ND_0, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, READ_ELECTRONIC_ID_2ND_1, ACK_CHECK_EN);
+    i2c_master_stop(i2c_handle);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
+    vTaskDelay(1 / portTICK_RATE_MS);
+
+    // read the electronic id second part
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
+    for (i = 0; i < 7; ++i) {
+        i2c_master_read_byte(i2c_handle, &buf[i], ACK_CHECK_EN);
+    }
+    i2c_master_read_byte(i2c_handle, &buf[7], ACK_CHECK_DIS);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
+
+    *serial_nr_b = (buf[0] << 24) + (buf[2] << 16) + (buf[4] << 8) + (buf[6] << 0)
+
     return SUCCESS;
 }
 
