@@ -42,7 +42,8 @@
                 "${workspaceFolder}/components/**",
                 "${workspaceFolder}/components/i2c_master/include",
                 "${workspaceFolder}/components/si_7006/include",
-                "C:/msys32/esp/esp-idf/components/esp32/include"
+                "C:/msys32/esp/esp-idf/components/esp32/include",
+                "C:/msys32/esp/esp-idf/components/freertos/include"
             ],
             "defines": [
                 "_DEBUG",
