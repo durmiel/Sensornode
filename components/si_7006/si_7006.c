@@ -12,6 +12,8 @@
 #define RESET                                   0xFE
 #define WRITE_HEATER_CONTROL_REG                0x51
 #define READ_HEATER_CONTROL_REG                 0x11
+#define READ_USER_CONFIG_REG                    0xE7
+#define WRITE_USER_CONFIG_REG                   0xE6
 #define READ_ELECTRONIC_ID_1ST_0                0xFA
 #define READ_ELECTRONIC_ID_1ST_1                0x0F
 #define READ_ELECTRONIC_ID_2ND_0                0xFC
@@ -40,10 +42,6 @@
 #define ACK_CHECK_DIS                       0x0                                       /*!< I2C master will not check ack from slave */
 #define ACK_VAL                             0x0                                       /*!< I2C ack value */
 #define NACK_VAL                            0x1                                       /*!< I2C nack value */
-
-#define DATA_LENGTH                         512                                       /*!< Data buffer length of test buffer */
-#define RW_TEST_LENGTH                      128                                       /*!< Data length for r/w test, [0,DATA_LENGTH] */
-#define DELAY_TIME_BETWEEN_ITEMS_MS         1000                                      /*!< delay time between different test items */
 
 /** ***************************************************************************
  *  @fn     Si7006_init(Failure_t* failure)
@@ -332,7 +330,8 @@ Status_t Si7006_readTemperature(Failure_t* failure, float* temperature, SI7006_R
     measured = (high_byte << 8) + low_byte;
     *temperature = ((175.72 * measured) / 65536) - 46.85;
 
-    return SUCCESS;}
+    return SUCCESS;
+}
 
 /** ***************************************************************************
  *  @fn     Si7006_readHeaterConfig(Failure_t* failure, uint8_t* heater_config)
@@ -346,6 +345,38 @@ Status_t Si7006_readTemperature(Failure_t* failure, float* temperature, SI7006_R
  *  @retval INTERNAL_ERROR  - an error occur during using an internal function
  *****************************************************************************/
 Status_t Si7006_readHeaterConfig(Failure_t* failure, uint8_t* heater_config) {
+    i2c_cmd_handle_t i2c_handle;
+    esp_err_t ret;
+    
+    // write the command to read the heater control register
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, READ_HEATER_CONTROL_REG, ACK_CHECK_EN);
+    i2c_master_stop(i2c_handle);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
+    vTaskDelay(1 / portTICK_RATE_MS);
+
+    // read the heater control register
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
+    i2c_master_read_byte(i2c_handle, heater_config, ACK_CHECK_DIS);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
     return SUCCESS;
 }
 
@@ -360,6 +391,25 @@ Status_t Si7006_readHeaterConfig(Failure_t* failure, uint8_t* heater_config) {
  *  @retval INTERNAL_ERROR  - an error occur during using an internal function
  *****************************************************************************/
 Status_t Si7006_writeHeaterConfig(Failure_t* failure, uint8_t heater_config) {
+    i2c_cmd_handle_t i2c_handle;
+    esp_err_t ret;
+    
+    // write the command and data to the heater control register
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, WRITE_HEATER_CONTROL_REG, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, heater_config, ACK_VAL);
+    i2c_master_stop(i2c_handle);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
+
     return SUCCESS;
 }
 
@@ -375,6 +425,38 @@ Status_t Si7006_writeHeaterConfig(Failure_t* failure, uint8_t heater_config) {
  *  @retval INTERNAL_ERROR  - an error occur during using an internal function
  *****************************************************************************/
 Status_t Si7006_readUserRegister(Failure_t* failure, uint8_t* user_config) {
+    i2c_cmd_handle_t i2c_handle;
+    esp_err_t ret;
+    
+    // write the command to read the user register
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, READ_USER_CONFIG_REG, ACK_CHECK_EN);
+    i2c_master_stop(i2c_handle);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
+    vTaskDelay(1 / portTICK_RATE_MS);
+
+    // read the user register
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | READ_BIT, ACK_CHECK_EN);
+    i2c_master_read_byte(i2c_handle, user_config, ACK_CHECK_DIS);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
     return SUCCESS;
 }
 
@@ -389,5 +471,24 @@ Status_t Si7006_readUserRegister(Failure_t* failure, uint8_t* user_config) {
  *  @retval INTERNAL_ERROR  - an error occur during using an internal function
  *****************************************************************************/
 Status_t Si7006_writeUserRegister(Failure_t* failure, uint8_t user_config) {
+    i2c_cmd_handle_t i2c_handle;
+    esp_err_t ret;
+    
+    // write the command and data to the user register
+    i2c_handle = i2c_cmd_link_create();
+    i2c_master_start(i2c_handle);
+    i2c_master_write_byte(i2c_handle, (SI_7006_ADDR << 1) | WRITE_BIT, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, WRITE_USER_CONFIG_REG, ACK_CHECK_EN);
+    i2c_master_write_byte(i2c_handle, user_config, ACK_VAL);
+    i2c_master_stop(i2c_handle);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, i2c_handle, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(i2c_handle);
+    if (ret != ESP_OK) {
+        failure->status = LIB_ERROR;
+        failure->failure_code = ret;
+        failure->fn_pointer = (uint32_t*) Si7006_readFirmwareVersion;
+        return LIB_ERROR;
+    }
+
     return SUCCESS;
 }
