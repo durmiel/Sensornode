@@ -5,7 +5,7 @@
 
 PROJECT_NAME := Sensornode
 
-EXCLUDE_COMPONENTS := vfs ulp wear_levelling wifi_provisioning wpa_supplicant tcpip_adapter tcp_transport sdmmc openssl micro-ecc mdns lwip json jsmn expat fatfs ethernet esp-tls
+EXCLUDE_COMPONENTS :=
 
 include $(IDF_PATH)/make/project.mk
 
