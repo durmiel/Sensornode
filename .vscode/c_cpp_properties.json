@@ -4,6 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/main/include",
+                "${workspaceFolder}/build/include",
                 "${workspaceFolder}/components/si_7006/include",
                 "C:/msys32/esp/esp-idf/components/app_trace/include",
                 "C:/msys32/esp/esp-idf/components/app_update/include",
@@ -11,6 +12,7 @@
                 "C:/msys32/esp/esp-idf/components/bootloader/include",
                 "C:/msys32/esp/esp-idf/components/bootloader_support/include",
                 "C:/msys32/esp/esp-idf/components/bt/include",
+                "C:/msys32/esp/esp-idf/components/bt/bluedroid/api/include/api",
                 "C:/msys32/esp/esp-idf/components/coap/include",
                 "C:/msys32/esp/esp-idf/components/console/include",
                 "C:/msys32/esp/esp-idf/components/cxx/include",
@@ -38,8 +40,12 @@
                 "C:/msys32/esp/esp-idf/components/mbedtls/include",
                 "C:/msys32/esp/esp-idf/components/mdns/include",
                 "C:/msys32/esp/esp-idf/components/micro-ecc/include",
+                "C:/msys32/esp/esp-idf/components/newlib/include",
+                "C:/msys32/esp/esp-idf/components/nvs_flash/include",
                 "C:/msys32/esp/esp-idf/components/esp32/include",
                 "C:/msys32/esp/esp-idf/components/freertos/include",
+                "C:/msys32/esp/esp-idf/components/spi_flash/include",
+                "C:/msys32/esp/esp-idf/components/soc/include/",
                 "C:/msys32/esp/esp-idf/components/driver/include/driver"
             ],
             "defines": [

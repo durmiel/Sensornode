@@ -7,7 +7,9 @@
 	"settings": {
 		"files.associations": {
 			"si_7006.h": "c",
-			"global.h": "c"
+			"global.h": "c",
+			"esp_bt.h": "c",
+			"freertos.h": "c"
 		}
 	}
 }
