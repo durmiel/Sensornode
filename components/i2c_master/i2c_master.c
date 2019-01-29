@@ -83,7 +83,6 @@ Status_t I2cMaster_init(Failure_t* failure) {
  *  @retval LIB_ERROR       - an error occur during using a library function
  *  @retval INTERNAL_ERROR  - an internal error occur during checking the parameter
  *****************************************************************************/
-/*
 Status_t I2cMaster_read(Failure_t* failure, I2cCommand_t* cmd,  i2c_port_t i2c_num, uint8_t slave_address, uint8_t *data_rd, size_t size) {
     uint8_t i;
     //TODO: check the command structure
@@ -102,7 +101,6 @@ Status_t I2cMaster_read(Failure_t* failure, I2cCommand_t* cmd,  i2c_port_t i2c_n
     i2c_cmd_link_delete(cmd);
     return ret;
 }
-*/
 /**
  * @brief Test code to write esp-i2c-slave
  *        Master device write data to slave(both esp32),
@@ -114,7 +112,6 @@ Status_t I2cMaster_read(Failure_t* failure, I2cCommand_t* cmd,  i2c_port_t i2c_n
  * --------|---------------------------|----------------------|------|
  *
  */
-/*
 Status_t I2cMaster_write(Failure_t* failure, i2c_port_t i2c_num, uint8_t slave_address, uint8_t *data_wr, size_t size) {
         // Do a size check
     if (size == 0) {
@@ -133,4 +130,3 @@ Status_t I2cMaster_write(Failure_t* failure, i2c_port_t i2c_num, uint8_t slave_a
     i2c_cmd_link_delete(cmd);
     return ret;
 }
-*/
