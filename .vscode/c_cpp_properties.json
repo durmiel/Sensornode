@@ -6,6 +6,8 @@
                 "${workspaceFolder}/main/include",
                 "${workspaceFolder}/build/include",
                 "${workspaceFolder}/components/si_7006/include",
+                "${workspaceFolder}/components/bluetooth/include",
+                "${workspaceFolder}/components/i2c_master/include",
                 "C:/msys32/esp/esp-idf/components/app_trace/include",
                 "C:/msys32/esp/esp-idf/components/app_update/include",
                 "C:/msys32/esp/esp-idf/components/aws_iot/include",

@@ -9,7 +9,11 @@
 			"si_7006.h": "c",
 			"global.h": "c",
 			"esp_bt.h": "c",
-			"freertos.h": "c"
+			"freertos.h": "c",
+			"esp_gap_ble_api.h": "c",
+			"esp_gatts_api.h": "c",
+			"esp_bt_defs.h": "c",
+			"esp_bt_main.h": "c"
 		}
 	}
 }
